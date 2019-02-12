@@ -1,17 +1,7 @@
-
-# coding: utf-8
-
-# In[2]:
-
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-
-
-# In[3]:
-
 
 #Function to display image
 def display_image(img):
@@ -19,13 +9,8 @@ def display_image(img):
     plt.yticks([])
     plt.imshow(img, cmap = 'gray')
 
-
-# In[4]:
-
-
 #Apply 3x3 Smoothing filter
-def smoothen(img):
-    
+def smoothen(img):    
     f = np.full((3,3), 1)
     n = np.sum(f)
     height, width = img.shape
@@ -44,13 +29,8 @@ def smoothen(img):
                 
     return smoothed
 
-
-# In[5]:
-
-
 #Apply x-dervative
-def x_derivative(img):
-    
+def x_derivative(img):    
     fx = np.array([-1,0,1])
     height, width = img.shape
     x = np.empty((height,width))
@@ -65,13 +45,8 @@ def x_derivative(img):
                 
     return x
 
-
-# In[6]:
-
-
 #Apply y-dervative
-def y_derivative(img):
-    
+def y_derivative(img):    
     fy = np.array([[-1],[0],[1]])
     height, width = img.shape
     y = np.empty((height,width))
@@ -86,18 +61,12 @@ def y_derivative(img):
                 
     return y
 
-
-# In[7]:
-
-
 #Apply 3x3 Gaussian filter
 def gaussian(img):
-    
     f = np.array([[1,2,1], [2,4,2], [1,2,1]])
     n = np.sum(f)
     height, width = img.shape
     detected = np.full((height,width), 1)
-
     for i in range(height):
         for j in range(width):
             #Set borders to the same values as the original image
@@ -111,10 +80,6 @@ def gaussian(img):
                 detected[i][j] = sum_m;
                 
     return detected
-
-
-# In[8]:
-
 
 def non_max_suppress(img):
     height, width = img.shape
@@ -131,38 +96,17 @@ def non_max_suppress(img):
                     
     return s
 
-
-# In[9]:
-
-
 #Input image
-
 filename = input('Enter image path: ')
 img = cv2.imread(filename, 0)
 
-
-# In[10]:
-
-
 height, width = img.shape
 
-
-# In[92]:
-
-
 display_image(img)
-
-
-# In[93]:
-
 
 #Smoothen image
 smoothed = smoothen(img)
 display_image(np.round(smoothed))
-
-
-# In[94]:
-
 
 #x-derivative of image
 dx = x_derivative(smoothed)
@@ -170,41 +114,21 @@ dx = x_derivative(smoothed)
 #Display x-derivative in the range [0,255]
 display_image(dx + 128)
 
-
-# In[95]:
-
-
 #y-derivative of image
 dy = y_derivative(smoothed)
 
 #Display y-derivative in the range [0,255]
 display_image(dy + 128)
 
-
-# In[96]:
-
-
 #Edge map or Gradient magnitude
 gradient_magnitude = np.sqrt(np.square(dx) + np.square(dy))
 display_image(gradient_magnitude)
 cv2.imwrite('downloads/edges.png', gradient_magnitude)
 
-
-# In[13]:
-
-
 edges = cv2.Canny(img, 0, 255)
-
-
-# In[97]:
-
 
 #display_image(edges)
 cv2.imwrite('downloads/canny.png', edges)
-
-
-# In[17]:
-
 
 #Hough transform
 hough_space = np.full((1200,180), 0)
@@ -218,23 +142,10 @@ for i in range(height):
                 count[int(round(rho+500))][int(round(theta))+90] += 1
                 
 #display_image(hough_space)
-
-
-# In[50]:
-
-
 display_image(count)
 cv2.imwrite('downloads/count.png', count)
 
-
-# In[52]:
-
-
 h, w = count.shape
-
-
-# In[110]:
-
 
 #Peak detection using threshold
 new_peaks = np.full((h,w), 0)
@@ -245,16 +156,8 @@ for i in range(h):
         else:
             new_peaks[i][j] = 0
 
-
-# In[111]:
-
-
 #Number of peaks detected
 np.count_nonzero(new_peaks)
-
-
-# In[112]:
-
 
 #Re-map peak values to image space
 detected_lines = np.full((height, width), 0)
@@ -268,4 +171,3 @@ for rho in range(1200):
                         
 display_image(detected_lines)
 cv2.imwrite('downloads/lines.png', detected_lines)
-
